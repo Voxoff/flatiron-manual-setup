@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # get all the input at the start for those UX points
+echo "Please ensure you are connected to wifi!"
+
 read -p "Enter github email: " email
 read -p "Enter fullname: " fullname
 
