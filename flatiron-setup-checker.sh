@@ -93,7 +93,7 @@ delimiter
 
 ## 7. Ruby Version Manager (rvm)
 print_table_results "Installed RVM" "command -v rvm >/dev/null 2>&1 && which rvm | grep -q '/Users/.*/\.rvm/bin/rvm'"
-print_table_results "Default RVM (2.3.3)" "command -v rvm >/dev/null 2>&1 && rvm list | grep -Fq '=* ruby-2.3.3 [ x86_64 ]'"
+print_table_results "Default RVM (2.3.3)" "command -v rvm >/dev/null 2>&1 && rvm list | grep -Fq '=* ruby-2.6.0 [ x86_64 ]'"
 print_table_results "Test RVM PATH" "command -v rvm >/dev/null 2>&1 && rvm list | grep -Fqv 'Warning! PATH'"
 delimiter
 

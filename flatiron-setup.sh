@@ -61,11 +61,25 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 echo "you now have rvm (that's ruby version manager)"
 
-# To void the OpenSSL dependency error
-# rwm use 2.3.3 --default --install
-rvm use 2.5.3 --default --install
+####################################################################
+# Ruby version
+#
+# Current flatiron version
+# vers=2.5.3
 
-echo "you now have ruby 2.5.3. Yay!"
+# Or keep up to date!!
+# A technique to find the latest stable version of ruby.  Currently this script default to 2.6.1 
+# html = Net::HTTP.get(URI("https://www.ruby-lang.org/en/downloads/"))
+# vers = html[/http.*ruby-(.*).tar.gz/,1]
+####################################################################
+vers=2.6.1
+
+
+# necessary for rvm to become a shell function, and so to run rvm use...
+source  ~/.rvm/scripts/rvm
+rvm use $vers --default --install
+
+echo "you now have ruby $vers. Yay!"
 
 # we love gems.
 gem update --system
@@ -75,8 +89,6 @@ echo "you now have ruby with gems!!"
 
 # leaving this because it requires input 
 # learn whoami
-
-echo "Learn. Love. Code"
 
 # need to do github stuff
 git config --global user.email $email 
@@ -110,5 +122,5 @@ export alias pg_start="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postg
 pg_start
 
 # This script is far from perfect. Check it.
-curl -so- https://raw.githubusercontent.com/hysan/flatiron-manual-setup-validator/master/manual-setup-check.sh | bash 2> /dev/null
+curl -so- https://raw.githubusercontent.com/Voxoff/flatiron-manual-setup/master/flatiron-setup-checker.sh | bash 2> /dev/null
 echo "This script does not run 'learn whoami'"
