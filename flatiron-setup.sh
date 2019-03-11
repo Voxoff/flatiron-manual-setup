@@ -3,33 +3,26 @@
 # get all the input at the start for those UX points
 echo "Please ensure you are connected to wifi!"
 
-read -p "Enter github email: " email
-read -p "Enter fullname: " fullname
-
-# xcode is by far the hardest part to install automatically. Errors in the script will most likley arise from this.
-# xcode-select --install && sleep 2
-# osascript -e 'tell application "System Events"' -e 'tell process "Install Command Line Developer Tools"' -e 'keystroke return' -e 'click button "Agree" of window "License Agreement"' -e 'end tell' -e 'end tell'
+# Xcode is hard to install automatically. It is automatically put into a background process. These are three failed attempts.
+# check for xcode, exit and demand install if not present
 
 os=$(sw_vers -productVersion | awk -F. '{print $1 "." $2}')
 if softwareupdate --history | grep --silent "Command Line Tools.*${os}"; then
-    echo 'Command-line tools already installed.' 
+    echo 'Command-line tools already installed.'
 else
-    echo 'Installing Command-line tools...'
-    in_progress=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-    touch ${in_progress}
-    product=$(softwareupdate --list | awk "/\* Command Line.*${os}/ { sub(/^   \* /, \"\"); print }")
-    softwareupdate --verbose --install "${product}" || echo 'Installation failed.' 1>&2 && rm ${in_progress} && exit 1
-    rm ${in_progress}
-    echo 'Installation succeeded.'
+  echo "Please ensure you have installed xcode before running this script. Run `xcode-select --install`."
+  return 1
 fi
 
-echo "you now have xcode :)"
+# info for git config
+read -p "Enter github email: " email
+read -p "Enter fullname: " fullname
 
 # homebrew
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew update
 
-echo "you now have homebrew"
+echo "You now have homebrew"
 
 # general brew packages
 function install_or_upgrade { brew ls | grep $1 > /dev/null; if (($? == 0)); then brew upgrade $1; else brew install $1; fi }
@@ -42,7 +35,7 @@ install_or_upgrade "gmp"
 install_or_upgrade "gnupg"
 install_or_upgrade "sqlite"
 
-echo "you now have homebrew level 2"
+echo "You now have homebrew level 2"
 
 # needs a checker for  Warning: gnupg-1.4.19 --->  brew link gnupg
 
@@ -59,7 +52,7 @@ fi
 
 export PATH="$PATH:$HOME/.rvm/bin"
 
-echo "you now have rvm (that's ruby version manager)"
+echo "You now have rvm (that's ruby version manager)"
 
 ####################################################################
 # Ruby version
@@ -67,7 +60,7 @@ echo "you now have rvm (that's ruby version manager)"
 # Current flatiron version
 # vers=2.5.3
 
-# Or keep up to date!!
+# Or keep it up to date!!
 # A technique to find the latest stable version of ruby.  Currently this script default to 2.6.1 
 # html = Net::HTTP.get(URI("https://www.ruby-lang.org/en/downloads/"))
 # vers = html[/http.*ruby-(.*).tar.gz/,1]
@@ -83,12 +76,9 @@ echo "you now have ruby $vers. Yay!"
 
 # we love gems.
 gem update --system
-gem install learn-co bundler json rspec pry pry-byebug nokogiri hub thin shotgun rack hotloader rails sinatra --no-document
+gem install learn-co bundler puma pg json rspec pry pry-byebug nokogiri hub thin shotgun rack hotloader rails sinatra --no-document
 
 echo "you now have ruby with gems!!"
-
-# leaving this because it requires input 
-# learn whoami
 
 # need to do github stuff
 git config --global user.email $email 
@@ -117,9 +107,14 @@ nvm alias default node
 
 # pg
 brew install postgresql
-ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
-export alias pg_start="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
-pg_start
+brew services start postgresql
+# old way
+#ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
+#export alias pg_start="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
+#pg_start
+
+# Some people don't want to restart their terminal
+source ~/.bashrc
 
 # This script is far from perfect. Check it.
 curl -so- https://raw.githubusercontent.com/Voxoff/flatiron-manual-setup/master/flatiron-setup-checker.sh | bash 2> /dev/null

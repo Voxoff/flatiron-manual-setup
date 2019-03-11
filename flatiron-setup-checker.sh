@@ -93,7 +93,7 @@ delimiter
 
 ## 7. Ruby Version Manager (rvm)
 print_table_results "Installed RVM" "command -v rvm >/dev/null 2>&1 && which rvm | grep -q '/Users/.*/\.rvm/bin/rvm'"
-print_table_results "Default RVM (2.3.3)" "command -v rvm >/dev/null 2>&1 && rvm list | grep -Fq '=* ruby-2.6.0 [ x86_64 ]'"
+print_table_results "Default RVM (2.3.3)" "command -v rvm >/dev/null 2>&1 && rvm list | grep -Fq '=* ruby-2.6.1 [ x86_64 ]'"
 print_table_results "Test RVM PATH" "command -v rvm >/dev/null 2>&1 && rvm list | grep -Fqv 'Warning! PATH'"
 delimiter
 
@@ -107,7 +107,6 @@ delimiter
 
 ## 10. Atom
 print_table_results "Installed Atom" "command -v atom >/dev/null 2>&1 && atom -v | grep -q 'Atom'"
-print_table_results "Learn Editor" "cat ~/.learn-config | grep ':editor:' | grep -q 'atom'"
 delimiter
 
 ## 11. Gems (more)
@@ -162,10 +161,3 @@ print_data_row "Username" "command -v git >/dev/null 2>&1 && git config github.u
 print_data_row "Email" "command -v git >/dev/null 2>&1 && git config github.email"
 delimiter
 
-## 9. Learn
-# https://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable
-echo "Learn"
-print_data_row "Name" "command -v learn >/dev/null 2>&1 && learn whoami | grep 'Name:' | sed 's/Name://g' | sed -e 's/^[[:space:]]*//'"
-print_data_row "Username" "command -v learn >/dev/null 2>&1 && learn whoami | grep 'Username:' | sed 's/Username://g' | sed -e 's/^[[:space:]]*//'"
-print_data_row "Email" "command -v learn >/dev/null 2>&1 && learn whoami | grep 'Email:' | sed 's/Email://g' | sed -e 's/^[[:space:]]*//'"
-delimiter
