@@ -257,7 +257,7 @@ delimiter
 
 ## 10. Atom
 print_table_results "Installed Atom" $check_atom
-print_table_results "Learn Editor" $check_atom_editor
+# print_table_results "Learn Editor" $check_atom_editor
 delimiter
 
 ## 11. Gems (more)
