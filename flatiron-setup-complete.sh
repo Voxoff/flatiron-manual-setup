@@ -11,42 +11,53 @@
 
 
 # extract strings - most are used in both checker script and installer script
+check_xcode='type xcode-select >&- && xpath=$( xcode-select --print-path ) && test -d "${xpath}" && test -x "${xpath}"'
+
 check_brew="command -v brew >/dev/null 2>&1"
 check_git="command -v git >/dev/null 2>&1 && git version | grep -q 'git version'"
 check_git_user="command -v git >/dev/null 2>&1 && git config --list | grep -q 'github.user='"
 check_git_email="command -v git >/dev/null 2>&1 && git config --list | grep -q 'github.email='"
+
 check_brew_gmp="command -v brew >/dev/null 2>&1 && brew list | grep -q 'gmp'"
 check_brew_gnupg="command -v brew >/dev/null 2>&1 && brew list | grep -q 'gnupg'"
+
 check_rvm="command -v rvm >/dev/null 2>&1 && which rvm | grep -q '/Users/.*/\.rvm/bin/rvm'"
-check_ruby_version="command -v rvm >/dev/null 2>&1 && rvm list | grep -Fq '=* ruby-2.6.0 [ x86_64 ]'"
-check_rvm="command -v rvm >/dev/null 2>&1 && rvm list | grep -Fqv 'Warning! PATH'"
+check_ruby_version="command -v rvm >/dev/null 2>&1 && rvm list | grep -Fq '=* ruby-2.6.1 [ x86_64 ]'"
+check_rvm_path="command -v rvm >/dev/null 2>&1 && rvm list | grep -Fqv 'Warning! PATH'"
+
 check_learn="command -v gem >/dev/null 2>&1 && gem list | grep -q 'learn-co'"
 check_bundler="command -v gem >/dev/null 2>&1 && gem list | grep -q 'bundler'"
-check_cask="! brew info cask &>/dev/null"
+check_nokogiri="command -v gem >/dev/null 2>&1 && gem list | grep -q 'nokogiri'"
+check_rails_gem="command -v gem >/dev/null 2>&1 && gem list | grep -q 'rails'"
+check_rails="command -v rails >/dev/null 2>&1 && rails --version | grep -q 'Rails'"
+
 check_atom="command -v atom >/dev/null 2>&1 && atom -v | grep -q 'Atom'"
 check_atom_editor="cat ~/.learn-config | grep ':editor:' | grep -q 'atom'"
-check_nokogiri="command -v gem >/dev/null 2>&1 && gem list | grep -q 'nokogiri'"
+
 check_sqlite3="command -v sqlite3 >/dev/null 2>&1"
 check_postgres="command -v postgres >/dev/null 2>&1 && postgres --version | grep -q 'postgres (PostgreSQL)'"
 check_psql="command -v psql >/dev/null 2>&1 && psql --version | grep -q 'psql (PostgreSQL)'"
-check_rails="command -v rails >/dev/null 2>&1 && rails --version | grep -q 'Rails'"
-check_rails_gem="command -v gem >/dev/null 2>&1 && gem list | grep -q 'rails'"
+
 check_nvm="command -v nvm >/dev/null 2>&1 && nvm --version | grep -q '[0-9]*\.[0-9]*\.[0-9]*'"
 check_node="command -v node | grep -q '/Users/.*/.nvm/versions/node/v.*/bin/node'"
-check_chrome="[ -f /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ] && /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version | grep -q 'Google Chrome'"
-check_slack="[ -f /Applications/Slack.app/Contents/MacOS/Slack ] && /Applications/Slack.app/Contents/MacOS/Slack --version | grep -q ''"
+check_node_version="command -v nvm >/dev/null 2>&1 && nvm version default | grep -q 'v11'"
+
+check_chrome="[[ -f /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ]]"
+check_slack="[[ -f /Applications/Slack.app/Contents/MacOS/Slack ]]"
+
 check_git_user_config="command -v git >/dev/null 2>&1 && git config github.user"
 check_git_email_config="command -v git >/dev/null 2>&1 && git config github.email"
+
 check_learn_name="command -v learn >/dev/null 2>&1 && learn whoami | grep 'Name:' | sed 's/Name://g' | sed -e 's/^[[:space:]]*//'"
 check_learn_username="command -v learn >/dev/null 2>&1 && learn whoami | grep 'Username:' | sed 's/Username://g' | sed -e 's/^[[:space:]]*//'"
 check_learn_email="command -v learn >/dev/null 2>&1 && learn whoami | grep 'Email:' | sed 's/Email://g' | sed -e 's/^[[:space:]]*//'"
 
 # get all the input at the start for those UX points
 echo "Please ensure you are connected to wifi!"
+echo "Please ensure you have run 'xcode-select --install' before this script"
 
 read -p "Enter github email: " email
 read -p "Enter fullname: " fullname
-
 
 ####################################################
 # xcode is by far the hardest part to install automatically. So I've skipped it.
@@ -69,36 +80,23 @@ read -p "Enter fullname: " fullname
 if ! eval $check_brew; then
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   brew update
-  echo "you now have homebrew"
+  echo "You now have homebrew"
 fi
 
 # general brew packages
 function install_or_upgrade { brew ls | grep $1 > /dev/null; if (($? == 0)); then brew upgrade $1; else brew install $1; fi }
 install_or_upgrade "git"
-install_or_upgrade "wget"
-install_or_upgrade "imagemagick"
-install_or_upgrade "jq"
-install_or_upgrade "openssl"
-install_or_upgrade "gmp"
-install_or_upgrade "gnupg"
-install_or_upgrade "sqlite"
+# install_or_upgrade "wget"
+# install_or_upgrade "imagemagick"
+# install_or_upgrade "jq"
+# install_or_upgrade "openssl"
+# install_or_upgrade "gmp"
+# install_or_upgrade "gnupg"
+# install_or_upgrade "sqlite"
 
-echo "you now have homebrew lvl 2"
+echo "You now have homebrew lvl 2"
 
-# lets have some rvm fun
-eval $check_rvm
-if (($? == 1)); then
-  curl -sSL https://get.rvm.io | bash
-  # work around so you dont have to close and reopen terminal
-  if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
-    . "$HOME/.rvm/scripts/rvm"
-  else
-    echo "$HOME/.rvm/scripts/rvm" could not be found.
-    exit 1
-  fi
-  export PATH="$PATH:$HOME/.rvm/bin"
-  echo "you now have rvm (that's ruby version manager)"
-fi
+
 
 ####################################################################
 # Ruby version
@@ -111,26 +109,50 @@ fi
 # vers = html[/http.*ruby-(.*).tar.gz/,1]
 ####################################################################
 
+vers=2.6.1
+if ! eval $check_rvm_path; then
+  rvm use $vers
+fi
+
+if ! eval $check_rvm; then
+  curl -sSL https://get.rvm.io | bash
+  # work around so you dont have to close and reopen terminal
+  if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
+    . "$HOME/.rvm/scripts/rvm"
+  else
+    echo "$HOME/.rvm/scripts/rvm" could not be found.
+    exit 1
+  fi
+  export PATH="$PATH:$HOME/.rvm/bin"
+  echo "You now have rvm (that's ruby version manager)"
+fi
+
+#Ruby
 if ! eval $check_ruby_version; then
-  vers=2.3.3
   # necessary for rvm to become a shell function, and so to run rvm use...
   source  ~/.rvm/scripts/rvm
   rvm use $vers --default --install
-  echo "you now have ruby $vers. Good move!"
+  echo "You now have ruby $vers. Good move!"
 fi
 
 # we love gems.
 gem update --system
-gem install learn-co bundler json rspec pry pry-byebug nokogiri hub thin shotgun rack hotloader rails sinatra --no-document
-echo "Ruby looks better with gems"
+gems=("learn-co" "bundler" "json" "rspec" "pry" "pry-byebug" "nokogiri" "hub" "thin" "shotgun" "rack" "hotloader" "rails" "sinatra")
+# only install those we don't have
+for i in ${gems}; do
+  ! eval "command -v gem >/dev/null 2>&1 && gem list | grep -q $i" && gem install $i --no-document && echo "installed $i"
+done
+echo "You now have Ruby lvl 2"
 
 # need to do that github config
 git config --global user.email $email
 git config --global user.name $fullname
 
-# Cask for slack, google and atom
-eval $check_cask && brew install caskroom/cask/brew-cask
-eval $check_atom && brew cask install atom
+# Cask for slack google and atom
+echo 'nvm'
+
+eval "command -v nvm >/dev/null 2>&1 && nvm --version | grep '[0-9]*\.[0-9]*\.[0-9]*'"
+echo $?
 
 if ! eval $check_nvm; then
   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
@@ -139,10 +161,12 @@ if ! eval $check_nvm; then
   source ~/.bash_profile
 fi
 
-eval $check_chrome && brew cask install google-chrome
-eval $check_slack && brew cask install slack
+! eval $check_atom && brew cask install atom
+! eval $check_chrome && brew cask install google-chrome
+! eval $check_slack && brew cask install slack
 
 # node stuff
+echo 'node'
 if ! eval $check_node; then
   nvm install node
   nvm use node
@@ -150,6 +174,7 @@ if ! eval $check_node; then
 fi
 
 # postgres
+echo 'pg'
 if ! eval $check_postgres; then
   brew install postgresql
   ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
@@ -176,7 +201,7 @@ CYAN='\033[0;36m'
 # $1 => Command to run
 evaluate_test () {
   # https://stackoverflow.com/questions/11193466/echo-without-newline-in-a-shell-script
-  eval $1 && printf "${GREEN}pass${NC}\n" || printf "${RED}fail${NC}\n"
+  eval $1 && printf "pass\n" || printf "fail\n"
 }
 
 evaluate () {
@@ -220,7 +245,7 @@ delimiter
 # https://apple.stackexchange.com/questions/219507/best-way-to-check-in-bash-if-command-line-tools-are-installed
 # https://stackoverflow.com/questions/15371925/how-to-check-if-command-line-tools-is-installed
 # https://stackoverflow.com/questions/21272479/how-can-i-find-out-if-i-have-xcode-commandline-tools-installed
-print_table_results "Xcode Command Line Tools" 'type xcode-select >&- && xpath=$( xcode-select --print-path ) && test -d "${xpath}" && test -x "${xpath}"'
+print_table_results "Xcode Command Line Tools" $check_xcode
 delimiter
 
 ## 4. Homebrew
@@ -243,7 +268,7 @@ delimiter
 
 ## 7. Ruby Version Manager (rvm)
 print_table_results "Installed RVM" $check_rvm
-print_table_results "Default RVM (2.3.3)" $check_rvm_v
+print_table_results "Default RVM (2.6.1)" $check_ruby_version
 print_table_results "Test RVM PATH" $check_rvm_path
 delimiter
 
@@ -271,17 +296,17 @@ print_table_results "Installed psql" $check_psql
 delimiter
 
 ## 13. Rails
-print_table_results "Installed Rails" $check_rail
+print_table_results "Installed Rails" $check_rails
 print_table_results "Gem: rails" $check_rails_gem
 delimiter
 
 ## 14. Node Version Manager (nvm)
 # https://unix.stackexchange.com/questions/184508/nvm-command-not-available-in-bash-script
 # https://stackoverflow.com/questions/39190575/bash-script-for-changing-nvm-node-version
-. ~/.nvm/nvm.sh
+source ~/.nvm/nvm.sh
 print_table_results "Installed NVM" $check_nvm
 print_table_results "Installed Node" $check_node
-print_table_results "Default Node (11.x)" 'command -v nvm >/dev/null 2>&1 && nvm version default | grep -q "v11"'
+print_table_results "Default Node (11.x)" $check_node_version
 delimiter
 
 ## 16. Google Chrome
