@@ -150,7 +150,7 @@ if ! eval $check_node; then
 fi
 
 # postgres
-if ! eval $check_postgres
+if ! eval $check_postgres; then
   brew install postgresql
   ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
   export alias pg_start="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
