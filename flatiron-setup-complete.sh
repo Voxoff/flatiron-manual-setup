@@ -42,8 +42,8 @@ check_nvm="command -v nvm >/dev/null 2>&1 && nvm --version | grep -q '[0-9]*\.[0
 check_node="command -v node | grep -q '/Users/.*/.nvm/versions/node/v.*/bin/node'"
 check_node_version="command -v nvm >/dev/null 2>&1 && nvm version default | grep -q 'v11'"
 
-check_chrome="[[ -f /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ]]"
-check_slack="[[ -f /Applications/Slack.app/Contents/MacOS/Slack ]]"
+check_chrome="[ -f /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ]"
+check_slack="[ -f /Applications/Slack.app/Contents/MacOS/Slack ]"
 
 check_git_user_config="command -v git >/dev/null 2>&1 && git config github.user"
 check_git_email_config="command -v git >/dev/null 2>&1 && git config github.email"
@@ -86,13 +86,13 @@ fi
 # general brew packages
 function install_or_upgrade { brew ls | grep $1 > /dev/null; if (($? == 0)); then brew upgrade $1; else brew install $1; fi }
 install_or_upgrade "git"
-# install_or_upgrade "wget"
-# install_or_upgrade "imagemagick"
-# install_or_upgrade "jq"
-# install_or_upgrade "openssl"
-# install_or_upgrade "gmp"
-# install_or_upgrade "gnupg"
-# install_or_upgrade "sqlite"
+install_or_upgrade "wget"
+install_or_upgrade "imagemagick"
+install_or_upgrade "jq"
+install_or_upgrade "openssl"
+install_or_upgrade "gmp"
+install_or_upgrade "gnupg"
+install_or_upgrade "sqlite"
 
 echo "You now have homebrew lvl 2"
 
@@ -111,7 +111,13 @@ echo "You now have homebrew lvl 2"
 
 vers=2.6.1
 if ! eval $check_rvm_path; then
-  rvm use $vers
+  # needed for rvm use
+  if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
+    . "$HOME/.rvm/scripts/rvm"
+    rvm use $vers
+  else
+    echo "$HOME/.rvm/scripts/rvm" could not be found. Will proceed to install it.
+  fi
 fi
 
 if ! eval $check_rvm; then
@@ -127,7 +133,7 @@ if ! eval $check_rvm; then
   echo "You now have rvm (that's ruby version manager)"
 fi
 
-#Ruby
+# Ruby
 if ! eval $check_ruby_version; then
   # necessary for rvm to become a shell function, and so to run rvm use...
   source  ~/.rvm/scripts/rvm
@@ -139,6 +145,7 @@ fi
 gem update --system
 gems=("learn-co" "bundler" "json" "rspec" "pry" "pry-byebug" "nokogiri" "hub" "thin" "shotgun" "rack" "hotloader" "rails" "sinatra")
 # only install those we don't have
+source  ~/.rvm/scripts/rvm
 for i in ${gems}; do
   ! eval "command -v gem >/dev/null 2>&1 && gem list | grep -q $i" && gem install $i --no-document && echo "installed $i"
 done
@@ -149,11 +156,8 @@ git config --global user.email $email
 git config --global user.name $fullname
 
 # Cask for slack google and atom
-echo 'nvm'
 
-eval "command -v nvm >/dev/null 2>&1 && nvm --version | grep '[0-9]*\.[0-9]*\.[0-9]*'"
-echo $?
-
+source ~/.nvm/nvm.sh
 if ! eval $check_nvm; then
   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
   echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bash_profile
@@ -166,7 +170,6 @@ fi
 ! eval $check_slack && brew cask install slack
 
 # node stuff
-echo 'node'
 if ! eval $check_node; then
   nvm install node
   nvm use node
@@ -174,7 +177,6 @@ if ! eval $check_node; then
 fi
 
 # postgres
-echo 'pg'
 if ! eval $check_postgres; then
   brew install postgresql
   ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
@@ -201,7 +203,7 @@ CYAN='\033[0;36m'
 # $1 => Command to run
 evaluate_test () {
   # https://stackoverflow.com/questions/11193466/echo-without-newline-in-a-shell-script
-  eval $1 && printf "pass\n" || printf "fail\n"
+  eval $1 && printf "${GREEN}pass${NC}\n" || printf "${RED}fail${NC}\n"
 }
 
 evaluate () {
@@ -241,7 +243,7 @@ validation_header
 delimiter
 
 
-## 2. Install Xcode Command Line Tools
+## 2. Xcode Command Line Tools
 # https://apple.stackexchange.com/questions/219507/best-way-to-check-in-bash-if-command-line-tools-are-installed
 # https://stackoverflow.com/questions/15371925/how-to-check-if-command-line-tools-is-installed
 # https://stackoverflow.com/questions/21272479/how-can-i-find-out-if-i-have-xcode-commandline-tools-installed
@@ -311,11 +313,13 @@ delimiter
 
 ## 16. Google Chrome
 # https://unix.stackexchange.com/questions/63387/single-command-to-check-if-file-exists-and-print-custom-message-to-stdout
-print_table_results "Installed Google Chrome" $check_chrome
+# Cant put this in a variable because it escapes the [] and I have no time
+print_table_results "Installed Google Chrome" "[ -f /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ] && /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version | grep -q 'Google Chrome'"
 delimiter
 
 ## 17. Slack
-print_table_results "Installed Slack" $check_slack
+# Cant put this in a variable because it escapes the [] and I have no time
+print_table_results "Installed Slack" "[ -f /Applications/Slack.app/Contents/MacOS/Slack ] && /Applications/Slack.app/Contents/MacOS/Slack --version | grep -q ''"
 delimiter
 
 
