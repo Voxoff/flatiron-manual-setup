@@ -4,8 +4,6 @@
 # Bash script for Flatiron Mac OS set up                                                    #
 # Made by Guy Bennett-Jones (London)                                                        #
 #                                                                                           #
-# If you're looking to make PR, look on Github /Voxoff/flatiron-manual-setup                #
-# The code is bundled here for ease of use, but don't fear, PRs would be gr8                #
 # I find it easiest to deliver this script by Airdrop for new laptops                       #
 #                                                                                           #
 #############################################################################################
@@ -56,12 +54,13 @@ echo "Please ensure you are connected to wifi!"
 echo "If errors arise, ensure you have run 'xcode-select --install'"
 
 # get all the input at the start for those UX points
-printf '%s ' 'Enter github email: '
+printf "Enter github email: "
 read ans
-email=ans
-echo 'email'
-printf '%s ' '\nEnter github name: '
+email=$ans
+
+printf 'Enter github name: '
 read ans
+name=$ans
 
 # homebrew
 if ! eval $check_brew; then
