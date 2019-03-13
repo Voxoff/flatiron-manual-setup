@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-#############################################################################################
-# Bash script for Flatiron Mac OS set up                                                    #
-# Made by Guy Bennett-Jones (London)                                                        #
-#                                                                                           #
-#                                                                                           #
-#############################################################################################
+##############################################################################################
+# Bash script for Flatiron Mac OS set up                                                     #
+# Made by Guy Bennett-Jones (London)                                                         #
+#                                                                                            #
+# http://help.learn.co/technical-support/local-environment/mac-osx-manual-environment-set-up #
+#                                                                                            #
+##############################################################################################
 
 # extract strings - most are used in both checker script and installer script
 check_xcode='type xcode-select >&- && xpath=$( xcode-select --print-path ) && test -d "${xpath}" && test -x "${xpath}"'
