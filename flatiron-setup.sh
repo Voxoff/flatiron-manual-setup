@@ -57,9 +57,11 @@ echo "If errors arise, ensure you have run 'xcode-select --install'"
 
 # get all the input at the start for those UX points
 printf '%s ' 'Enter github email: '
-read "Enter github email: " email
+read ans
+email=ans
+echo $email
 printf '%s ' 'Enter github name: '
-read "Enter fullname: " fullname
+read ans
 
 # homebrew
 if ! eval $check_brew; then
