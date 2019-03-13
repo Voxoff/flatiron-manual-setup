@@ -158,9 +158,9 @@ if ! eval $check_postgres; then
   pg_start
 fi
 
-###########################################################################
-# Credit to Hysan for the below script. Copied and changed from original  #
-###########################################################################
+###################################################################################
+# Credit to Michael Cheng for the below script. Copied and changed from original  #
+###################################################################################
 
 # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 NC='\033[0m' # No Color
