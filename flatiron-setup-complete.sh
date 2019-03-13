@@ -5,10 +5,9 @@
 # Made by Guy Bennett-Jones (London)                                                        #
 #                                                                                           #
 # If you're looking to make PR, look on Github /Voxoff/flatiron-manual-setup                #
-# The code is bundled here for ease of use, but its split up on GH, thus easier to parse    #
+# The code is bundled here for ease of use,  but don't fear, PRs would be gr8               #
 #                                                                                           #
 #############################################################################################
-
 
 # extract strings - most are used in both checker script and installer script
 check_xcode='type xcode-select >&- && xpath=$( xcode-select --print-path ) && test -d "${xpath}" && test -x "${xpath}"'
@@ -45,58 +44,36 @@ check_node_version="command -v nvm >/dev/null 2>&1 && nvm version default | grep
 check_chrome="[ -f /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ]"
 check_slack="[ -f /Applications/Slack.app/Contents/MacOS/Slack ]"
 
-check_git_user_config="command -v git >/dev/null 2>&1 && git config github.user"
-check_git_email_config="command -v git >/dev/null 2>&1 && git config github.email"
+check_git_user_config="command -v git >/dev/null 2>&1 && git config --global user.name"
+check_git_email_config="command -v git >/dev/null 2>&1 && git config --global user.email"
 
 check_learn_name="command -v learn >/dev/null 2>&1 && learn whoami | grep 'Name:' | sed 's/Name://g' | sed -e 's/^[[:space:]]*//'"
 check_learn_username="command -v learn >/dev/null 2>&1 && learn whoami | grep 'Username:' | sed 's/Username://g' | sed -e 's/^[[:space:]]*//'"
 check_learn_email="command -v learn >/dev/null 2>&1 && learn whoami | grep 'Email:' | sed 's/Email://g' | sed -e 's/^[[:space:]]*//'"
 
-# get all the input at the start for those UX points
 echo "Please ensure you are connected to wifi!"
-echo "Please ensure you have run 'xcode-select --install' before this script"
+echo "If errors arise, ensure you have run 'xcode-select --install'"
 
+# get all the input at the start for those UX points
 read -p "Enter github email: " email
 read -p "Enter fullname: " fullname
-
-####################################################
-# xcode is by far the hardest part to install automatically. So I've skipped it.
-#
-# os=$(sw_vers -productVersion | awk -F. '{print $1 "." $2}')
-# if softwareupdate --history | grep --silent "Command Line Tools.*${os}"; then
-#     echo 'Command-line tools already installed.'
-# else
-#     echo 'Installing Command-line tools...'
-#     in_progress=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-#     touch ${in_progress}
-#     product=$(softwareupdate --list | awk "/\* Command Line.*${os}/ { sub(/^   \* /, \"\"); print }")
-#     softwareupdate --verbose --install "${product}" || echo 'Installation failed.' 1>&2 && rm ${in_progress} && exit 1
-#     rm ${in_progress}
-#     echo 'Installation succeeded.'
-# fi
-######################################################
 
 # homebrew
 if ! eval $check_brew; then
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   brew update
-  echo "You now have homebrew"
 fi
 
 # general brew packages
 function install_or_upgrade { brew ls | grep $1 > /dev/null; if (($? == 0)); then brew upgrade $1; else brew install $1; fi }
 install_or_upgrade "git"
 install_or_upgrade "wget"
-install_or_upgrade "imagemagick"
-install_or_upgrade "jq"
-install_or_upgrade "openssl"
 install_or_upgrade "gmp"
 install_or_upgrade "gnupg"
 install_or_upgrade "sqlite"
-
-echo "You now have homebrew lvl 2"
-
-
+install_or_upgrade "imagemagick"
+install_or_upgrade "jq"
+install_or_upgrade "openssl"
 
 ####################################################################
 # Ruby version
@@ -133,7 +110,6 @@ if ! eval $check_rvm; then
   echo "You now have rvm (that's ruby version manager)"
 fi
 
-# Ruby
 if ! eval $check_ruby_version; then
   # necessary for rvm to become a shell function, and so to run rvm use...
   source  ~/.rvm/scripts/rvm
@@ -143,48 +119,41 @@ fi
 
 # we love gems.
 gem update --system
-gems=("learn-co" "bundler" "json" "rspec" "pry" "pry-byebug" "nokogiri" "hub" "thin" "shotgun" "rack" "hotloader" "rails" "sinatra")
+gems=("learn-co" "bundler" "json" "rspec" "pry" "pry-byebug" "sqlite3" "nokogiri" "hub" "thin" "shotgun" "rack" "hotloader" "rails" "sinatra")
 # only install those we don't have
 source  ~/.rvm/scripts/rvm
 for i in ${gems}; do
   ! eval "command -v gem >/dev/null 2>&1 && gem list | grep -q $i" && gem install $i --no-document && echo "installed $i"
 done
-echo "You now have Ruby lvl 2"
 
-# need to do that github config
 git config --global user.email $email
 git config --global user.name $fullname
 
 # Cask for slack google and atom
+! eval $check_atom && brew cask install atom
+! eval $check_chrome && brew cask install google-chrome
+! eval $check_slack && brew cask install slack
 
 source ~/.nvm/nvm.sh
 if ! eval $check_nvm; then
-  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+  curl -so- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
   echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bash_profile
   echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bash_profile
   source ~/.bash_profile
 fi
 
-! eval $check_atom && brew cask install atom
-! eval $check_chrome && brew cask install google-chrome
-! eval $check_slack && brew cask install slack
-
-# node stuff
 if ! eval $check_node; then
   nvm install node
   nvm use node
   nvm alias default node
 fi
 
-# postgres
 if ! eval $check_postgres; then
   brew install postgresql
   ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
   export alias pg_start="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
   pg_start
 fi
-
-# This script is far from perfect. Check it.
 
 ###########################################################################
 # Credit to Hysan for the below script. Copied and changed from original  #
@@ -284,6 +253,7 @@ delimiter
 
 ## 10. Atom
 print_table_results "Installed Atom" $check_atom
+# This script does not run learn whoami
 # print_table_results "Learn Editor" $check_atom_editor
 delimiter
 
@@ -329,8 +299,8 @@ delimiter
 
 ## 5. git
 echo "Github"
-print_data_row "Username" $check_git_config_username
-print_data_row "Email" $check_git_config_email
+print_data_row "Username" $check_git_user_config
+print_data_row "Email" $check_git_email_config
 delimiter
 
 ## 9. Learn
@@ -340,3 +310,5 @@ print_data_row "Name" $check_learn_name
 print_data_row "Username" $check_learn_username
 print_data_row "Email" $check_learn_email
 delimiter
+
+echo 'Remember to run learn whoami AND set up ssh'
