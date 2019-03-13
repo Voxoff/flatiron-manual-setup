@@ -1,6 +1,6 @@
 # flatiron-manual-setup
 
-# Created by Guy Bennett-Jones
+###### Created by Guy Bennett-Jones
 
 This is a script that automates the manual setup process at Flatiron school. 
 
