@@ -56,8 +56,7 @@ echo "If errors arise, ensure you have run 'xcode-select --install'"
 printf "Enter github email: "
 read ans
 email=$ans
-echo "\n"
-printf 'Enter github name: '
+printf "\n Enter github name: "
 read ans
 name=$ans
 
