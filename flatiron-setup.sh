@@ -302,16 +302,16 @@ delimiter
 
 ## 5. git
 echo "Github"
-print_data_row "Username" "$check_git_user_config"
-print_data_row "Email" "$check_git_email_config"
+print_data_row "Username" $check_git_user_config
+print_data_row "Email" $check_git_email_config
 delimiter
 
 ## 9. Learn
 # https://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable
 echo "Learn"
-print_data_row "Name" "$check_learn_name"
-print_data_row "Username" "$check_learn_username"
-print_data_row "Email" "$check_learn_email"
+print_data_row "Name" $check_learn_name
+print_data_row "Username" $check_learn_username
+print_data_row "Email" $check_learn_email
 delimiter
 
 echo 'Remember to run learn whoami AND set up ssh'
