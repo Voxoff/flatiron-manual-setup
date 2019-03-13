@@ -108,7 +108,6 @@ if ! eval $check_rvm; then
     . "$HOME/.rvm/scripts/rvm"
   else
     echo "$HOME/.rvm/scripts/rvm" could not be found.
-    exit 1
   fi
   export PATH="$PATH:$HOME/.rvm/bin"
   echo "You now have rvm (that's ruby version manager)"
@@ -124,7 +123,7 @@ fi
 # we love gems.
 gem update --system
 gems=("learn-co" "bundler" "json" "rspec" "pry" "pry-byebug" "sqlite3" "nokogiri" "hub" "thin" "shotgun" "rack" "hotloader" "rails" "sinatra")
-# only install those we don't have
+# only install those we don't have. rvm line to ensure gems not installed on macos ruby
 source  ~/.rvm/scripts/rvm
 for i in ${gems}; do
   ! eval "command -v gem >/dev/null 2>&1 && gem list | grep -q $i" && gem install $i --no-document && echo "installed $i"
