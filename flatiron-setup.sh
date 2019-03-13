@@ -82,9 +82,9 @@ install_or_upgrade "openssl"
 ####################################################################
 # Ruby version
 #
-# Current flatiron version is 2.3.3
+# Current flatiron version is 2.6.1
 #
-# Or keep up to date!!
+# Or if you want to keep up to date!
 # A technique to find the latest stable version of ruby.
 # html = Net::HTTP.get(URI("https://www.ruby-lang.org/en/downloads/"))
 # vers = html[/http.*ruby-(.*).tar.gz/,1]
