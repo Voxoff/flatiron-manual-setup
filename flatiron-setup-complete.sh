@@ -5,7 +5,8 @@
 # Made by Guy Bennett-Jones (London)                                                        #
 #                                                                                           #
 # If you're looking to make PR, look on Github /Voxoff/flatiron-manual-setup                #
-# The code is bundled here for ease of use,  but don't fear, PRs would be gr8               #
+# The code is bundled here for ease of use, but don't fear, PRs would be gr8                #
+# I find it easiest to deliver this script by Airdrop for new laptops                       #
 #                                                                                           #
 #############################################################################################
 
