@@ -4,7 +4,6 @@
 # Bash script for Flatiron Mac OS set up                                                    #
 # Made by Guy Bennett-Jones (London)                                                        #
 #                                                                                           #
-# I find it easiest to deliver this script by Airdrop for new laptops                       #
 #                                                                                           #
 #############################################################################################
 
