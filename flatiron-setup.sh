@@ -53,12 +53,16 @@ echo "Please ensure you are connected to wifi!"
 echo "If errors arise, ensure you have run 'xcode-select --install'"
 
 # get all the input at the start for those UX points
-printf "Enter github email: "
-read ans
-email=$ans
-printf "\n Enter github name: "
-read ans
-name=$ans
+echo -n "Enter github email: "
+read answer
+email=$answer
+
+echo -n "Enter github name: "
+read answer
+name=$answer
+
+echo $email
+echo $name
 
 # homebrew
 if ! eval $check_brew; then
