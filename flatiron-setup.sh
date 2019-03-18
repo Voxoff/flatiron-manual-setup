@@ -60,7 +60,7 @@ email=$answer
 
 echo -n "Enter github name: "
 read answer
-name=$answer
+fullname=$answer
 
 # homebrew
 if ! eval $check_brew; then
