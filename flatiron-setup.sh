@@ -178,10 +178,6 @@ evaluate_test () {
   eval $1 && printf "${GREEN}pass${NC}\n" || printf "${RED}fail${NC}\n"
 }
 
-evaluate () {
-  eval $1
-}
-
 # $1 => Test Name
 # $2 => Command to run
 print_table_results () {
@@ -302,8 +298,8 @@ delimiter
 
 ## 5. git
 echo "Github"
-print_data_row "Username" $check_git_user_config
-print_data_row "Email" $check_git_email_config
+print_data_row "Username" "$check_git_user_config"
+print_data_row "Email" "$check_git_email_config"
 delimiter
 
 ## 9. Learn
