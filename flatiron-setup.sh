@@ -193,7 +193,7 @@ print_table_results () {
 # $1 => Test Name
 # $2 => Command to run
 print_data_row () {
-  local result=$(evaluate "$2")
+  local result=$(eval "$2")
   printf "%-12s => [ %-6s ]\n" "$1" "$result"
 }
 
