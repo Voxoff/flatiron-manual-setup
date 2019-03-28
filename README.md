@@ -2,7 +2,8 @@
 
 ###### Created by Guy Bennett-Jones
 
-This is a script that automates the manual setup process at Flatiron school. 
+This is a script that automates the manual setup process at Flatiron school as delineated here: 
+https://help.learn.co/technical-support/local-environment/mac-osx-manual-environment-set-up
 
 
 ```sh
