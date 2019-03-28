@@ -316,4 +316,4 @@ print_data_row "Username" $check_learn_username
 print_data_row "Email" $check_learn_email
 delimiter
 
-echo 'Remember to run learn whoami AND set up ssh'
+echo 'Please restart the terminal, then run learn whoami and set up ssh'
