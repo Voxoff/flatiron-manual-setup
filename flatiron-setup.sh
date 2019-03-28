@@ -158,6 +158,12 @@ if ! eval $check_postgres; then
   pg_start
 fi
 
+
+# Optional stuff. I've left it at the defaults acheivable on the UI in settings.
+# Leave this as a comment
+# defaults write -g KeyRepeat -int 2
+# defaults write -g InitialKeyRepeat -int 15
+
 ###################################################################################
 # Credit to Michael Cheng for the below script. Copied and changed from original  #
 ###################################################################################
